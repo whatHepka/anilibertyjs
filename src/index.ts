@@ -644,28 +644,28 @@ export class AniLibertyClient {
    * Получить профиль текущего пользователя
    */
   async getMyProfile(): Promise<ApiResponse<UserProfile>> {
-    return this.request<UserProfile>('GET', '/accounts/users/my/profile');
+    return this.request<UserProfile>('GET', '/accounts/users/me/profile');
   }
 
   /**
    * Обновить профиль
    */
   async updateMyProfile(request: UpdateProfileRequest): Promise<ApiResponse<UserProfile>> {
-    return this.request<UserProfile>('PUT', '/accounts/users/my/profile', request);
+    return this.request<UserProfile>('PUT', '/accounts/users/me/profile', request);
   }
 
   /**
    * Изменить пароль
    */
   async updateMyPassword(request: UpdatePasswordRequest): Promise<ApiResponse<void>> {
-    return this.request<void>('PUT', '/accounts/users/my/profile/password', request);
+    return this.request<void>('PUT', '/accounts/users/me/profile/password', request);
   }
 
   /**
    * Удалить аккаунт
    */
   async deleteMyAccount(): Promise<ApiResponse<void>> {
-    return this.request<void>('DELETE', '/accounts/users/my/profile');
+    return this.request<void>('DELETE', '/accounts/users/me/profile');
   }
 
   // ============================================================================
@@ -676,56 +676,56 @@ export class AniLibertyClient {
    * Получить список статусов коллекций
    */
   async getCollectionStatuses(): Promise<ApiResponse<FavoriteStatus[]>> {
-    return this.request<FavoriteStatus[]>('GET', '/accounts/users/my/collections/dictionaries/statuses');
+    return this.request<FavoriteStatus[]>('GET', '/accounts/users/me/collections/dictionaries/statuses');
   }
 
   /**
    * Получить все коллекции пользователя
    */
   async getMyCollections(params?: PaginationParams): Promise<ApiResponse<Collection[]>> {
-    return this.request<Collection[]>('GET', '/accounts/users/my/collections', undefined, params);
+    return this.request<Collection[]>('GET', '/accounts/users/me/collections', undefined, params);
   }
 
   /**
    * Создать коллекцию
    */
   async createCollection(request: CreateCollectionRequest): Promise<ApiResponse<Collection>> {
-    return this.request<Collection>('POST', '/accounts/users/my/collections', request);
+    return this.request<Collection>('POST', '/accounts/users/me/collections', request);
   }
 
   /**
    * Получить коллекцию по ID
    */
   async getCollection(collectionId: string, params?: IncludeExcludeParams): Promise<ApiResponse<Collection>> {
-    return this.request<Collection>('GET', `/accounts/users/my/collections/${collectionId}`, undefined, params);
+    return this.request<Collection>('GET', `/accounts/users/me/collections/${collectionId}`, undefined, params);
   }
 
   /**
    * Обновить коллекцию
    */
   async updateCollection(collectionId: string, request: UpdateCollectionRequest): Promise<ApiResponse<Collection>> {
-    return this.request<Collection>('PUT', `/accounts/users/my/collections/${collectionId}`, request);
+    return this.request<Collection>('PUT', `/accounts/users/me/collections/${collectionId}`, request);
   }
 
   /**
    * Удалить коллекцию
    */
   async deleteCollection(collectionId: string): Promise<ApiResponse<void>> {
-    return this.request<void>('DELETE', `/accounts/users/my/collections/${collectionId}`);
+    return this.request<void>('DELETE', `/accounts/users/me/collections/${collectionId}`);
   }
 
   /**
    * Добавить релиз в коллекцию
    */
   async addReleaseToCollection(collectionId: string, request: AddReleaseToCollectionRequest): Promise<ApiResponse<void>> {
-    return this.request<void>('POST', `/accounts/users/my/collections/${collectionId}/releases`, request);
+    return this.request<void>('POST', `/accounts/users/me/collections/${collectionId}/releases`, request);
   }
 
   /**
    * Удалить релиз из коллекции
    */
   async removeReleaseFromCollection(collectionId: string, releaseId: string): Promise<ApiResponse<void>> {
-    return this.request<void>('DELETE', `/accounts/users/my/collections/${collectionId}/releases/${releaseId}`);
+    return this.request<void>('DELETE', `/accounts/users/me/collections/${collectionId}/releases/${releaseId}`);
   }
 
   // ============================================================================
@@ -736,35 +736,35 @@ export class AniLibertyClient {
    * Получить список статусов избранного
    */
   async getFavoriteStatuses(): Promise<ApiResponse<FavoriteStatus[]>> {
-    return this.request<FavoriteStatus[]>('GET', '/accounts/users/my/favorites/dictionaries/statuses');
+    return this.request<FavoriteStatus[]>('GET', '/accounts/users/me/favorites/dictionaries/statuses');
   }
 
   /**
    * Получить все избранные релизы
    */
   async getMyFavorites(params?: PaginationParams & IncludeExcludeParams): Promise<ApiResponse<Favorite[]>> {
-    return this.request<Favorite[]>('GET', '/accounts/users/my/favorites', undefined, params);
+    return this.request<Favorite[]>('GET', '/accounts/users/me/favorites', undefined, params);
   }
 
   /**
    * Добавить релиз в избранное
    */
   async addToFavorites(request: AddToFavoriteRequest): Promise<ApiResponse<Favorite>> {
-    return this.request<Favorite>('POST', '/accounts/users/my/favorites', request);
+    return this.request<Favorite>('POST', '/accounts/users/me/favorites', request);
   }
 
   /**
    * Обновить статус избранного релиза
    */
   async updateFavorite(releaseId: string, request: UpdateFavoriteRequest): Promise<ApiResponse<Favorite>> {
-    return this.request<Favorite>('PUT', `/accounts/users/my/favorites/${releaseId}`, request);
+    return this.request<Favorite>('PUT', `/accounts/users/me/favorites/${releaseId}`, request);
   }
 
   /**
    * Удалить релиз из избранного
    */
   async removeFromFavorites(releaseId: string): Promise<ApiResponse<void>> {
-    return this.request<void>('DELETE', `/accounts/users/my/favorites/${releaseId}`);
+    return this.request<void>('DELETE', `/accounts/users/me/favorites/${releaseId}`);
   }
 
   // ============================================================================
@@ -775,28 +775,28 @@ export class AniLibertyClient {
    * Получить историю просмотров
    */
   async getWatchHistory(params?: PaginationParams & IncludeExcludeParams): Promise<ApiResponse<WatchHistory[]>> {
-    return this.request<WatchHistory[]>('GET', '/accounts/users/my/watch-history', undefined, params);
+    return this.request<WatchHistory[]>('GET', '/accounts/users/me/watch-history', undefined, params);
   }
 
   /**
    * Обновить позицию просмотра эпизода
    */
   async updateWatchHistory(releaseId: string, request: UpdateWatchHistoryRequest): Promise<ApiResponse<WatchHistory>> {
-    return this.request<WatchHistory>('PUT', `/accounts/users/my/watch-history/${releaseId}`, request);
+    return this.request<WatchHistory>('PUT', `/accounts/users/me/watch-history/${releaseId}`, request);
   }
 
   /**
    * Удалить запись из истории просмотров
    */
   async deleteWatchHistory(releaseId: string): Promise<ApiResponse<void>> {
-    return this.request<void>('DELETE', `/accounts/users/my/watch-history/${releaseId}`);
+    return this.request<void>('DELETE', `/accounts/users/me/watch-history/${releaseId}`);
   }
 
   /**
    * Очистить всю историю просмотров
    */
   async clearWatchHistory(): Promise<ApiResponse<void>> {
-    return this.request<void>('DELETE', '/accounts/users/my/watch-history');
+    return this.request<void>('DELETE', '/accounts/users/me/watch-history');
   }
 
   // ============================================================================
