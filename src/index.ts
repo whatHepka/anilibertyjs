@@ -1,46 +1,126 @@
-/**
- * AniLiberty API Client для Node.js
- * Полное покрытие AniLiberty API V1
- * @version 1.0.0
- */
-
-import fetch, { RequestInit, Response } from 'node-fetch';
-import { Buffer } from 'buffer';
+import {
+  // Commons
+  ApiResponse,
+  PaginationParams,
+  IncludeExcludeParams,
+  
+  // OTP
+  OTPGetResponse,
+  OTPLoginResponse,
+  
+  // Auth
+  LoginResponse,
+  SocialAuthLoginResponse,
+  SocialAuthAuthenticateResponse,
+  LogoutResponse,
+  UserSocialType,
+  
+  // User
+  User,
+  UserSession,
+  
+  // Collections
+  UserCollectionType,
+  CollectionsReferencesAgeRatings,
+  CollectionsReferencesGenres,
+  CollectionsReferencesTypes,
+  CollectionsReferencesYears,
+  CollectionIdsResponse,
+  CollectionReleasesResponse,
+  CollectionReleaseItem,
+  
+  // Favorites
+  UserFavoriteSorting,
+  FavoritesReferencesAgeRatings,
+  FavoritesReferencesGenres,
+  FavoritesReferencesSorting,
+  FavoritesReferencesTypes,
+  FavoritesReferencesYears,
+  FavoriteIdsResponse,
+  FavoriteReleasesResponse,
+  
+  // Views
+  ViewHistoryResponse,
+  ViewTimecodesResponse,
+  ViewTimecodeItem,
+  UserView,
+  
+  // Ads
+  AdVast,
+  
+  // Catalog
+  CatalogFiltersParams,
+  CatalogReleasesResponse,
+  CatalogReferenceAgeRating,
+  CatalogReferenceGenre,
+  CatalogReferenceProductionStatus,
+  CatalogReferencePublishStatus,
+  CatalogReferenceSeason,
+  CatalogReferenceSorting,
+  CatalogReferenceType,
+  CatalogReferenceYears,
+  
+  // Franchises
+  Franchise,
+  FranchiseWithReleases,
+  FranchisesResponse,
+  FranchiseResponse,
+  RandomFranchisesResponse,
+  FranchisesByReleaseResponse,
+  
+  // Genres
+  Genre,
+  GenresResponse,
+  GenreResponse,
+  GenreReleasesResponse,
+  
+  // Releases
+  Release,
+  ReleaseFull,
+  ReleaseLatest,
+  LatestReleasesResponse,
+  RandomReleasesResponse,
+  RecommendedReleasesResponse,
+  SearchReleasesResponse,
+  ReleaseMember,
+  
+  // Episodes
+  Episode,
+  EpisodeWithRelease,
+  
+  // Schedule
+  ScheduleNowResponse,
+  ScheduleWeekResponse,
+  
+  // Torrents
+  Torrent,
+  TorrentWithRelease,
+  TorrentsResponse,
+  
+  // App
+  AppStatus,
+  
+  // Media
+  MediaPromotion,
+  VideoWithOrigin,
+  MediaPromotionsResponse,
+  MediaVideosResponse,
+  
+  // Teams
+  Team,
+  TeamRole,
+  TeamUserFull,
+  TeamsResponse,
+  TeamRolesResponse,
+  TeamUsersResponse,
+} from './api-types';
 
 // ============================================================================
-// ТИПЫ И ИНТЕРФЕЙСЫ
+// REQUEST BODY ИНТЕРФЕЙСЫ
 // ============================================================================
 
-// Базовые типы
-export interface ApiResponse<T> {
-  data?: T;
-  error?: string;
-  status: number;
-}
-
-export interface PaginationParams {
-  page?: number;
-  limit?: number;
-}
-
-export interface IncludeExcludeParams {
-  include?: string | string[];
-  exclude?: string | string[];
-}
-
-export interface ValidationError {
-  message: string;
-  errors: Record<string, string[]>;
-}
-
-// Аккаунты - OTP
 export interface OTPGetRequest {
   device_id: string;
-}
-
-export interface OTPGetResponse {
-  code: number;
-  expires_at: string;
 }
 
 export interface OTPAcceptRequest {
@@ -52,323 +132,97 @@ export interface OTPLoginRequest {
   device_id: string;
 }
 
-export interface OTPLoginResponse {
-  access_token: string;
-  token_type: string;
-  expires_in: number;
-}
-
-// Аккаунты - Авторизация
 export interface LoginRequest {
   login: string;
   password: string;
 }
 
-export interface LoginResponse {
-  access_token: string;
-  token_type: string;
-  expires_in: number;
-}
-
-export interface SocialAuthRedirectResponse {
-  url: string;
-}
-
-export interface SocialAuthCallbackParams {
-  code: string;
-  state?: string;
-}
-
-export interface PasswordResetRequest {
+export interface PasswordForgetRequest {
   email: string;
 }
 
-export interface PasswordResetConfirmRequest {
+export interface PasswordResetRequest {
   token: string;
   password: string;
   password_confirmation: string;
 }
 
-// Пользователь
-export interface User {
-  id: string;
-  login: string;
-  email: string;
-  avatar?: string;
-  created_at: string;
-  updated_at: string;
+export interface CollectionReleasesRequestBody {
+  page?: number;
+  limit?: number;
+  type_of_collection: UserCollectionType;
+  f?: {
+    genres?: string;
+    types?: string[];
+    years?: string;
+    search?: string;
+    age_ratings?: string[];
+  };
+  include?: string;
+  exclude?: string;
 }
 
-export interface UserProfile extends User {
-  description?: string;
-  settings?: UserSettings;
+export interface AddToCollectionRequest {
+  release_id: number;
+  type_of_collection: UserCollectionType;
 }
 
-export interface UserSettings {
-  notifications_enabled: boolean;
-  adult_content: boolean;
-  autoplay: boolean;
+export interface RemoveFromCollectionRequest {
+  release_id: number;
 }
 
-export interface UpdateProfileRequest {
-  login?: string;
-  email?: string;
-  description?: string;
-  avatar?: string;
-}
-
-export interface UpdatePasswordRequest {
-  old_password: string;
-  new_password: string;
-  new_password_confirmation: string;
-}
-
-// Коллекции
-export interface Collection {
-  id: string;
-  title: string;
-  description?: string;
-  is_public: boolean;
-  releases_count: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface CreateCollectionRequest {
-  title: string;
-  description?: string;
-  is_public?: boolean;
-}
-
-export interface UpdateCollectionRequest {
-  title?: string;
-  description?: string;
-  is_public?: boolean;
-}
-
-export interface AddReleaseToCollectionRequest {
-  release_id: string;
-}
-
-// Избранное
-export interface FavoriteStatus {
-  id: string;
-  title: string;
-  sort_order: number;
-}
-
-export interface Favorite {
-  id: string;
-  release_id: string;
-  status_id: string;
-  created_at: string;
+export interface FavoriteReleasesRequestBody {
+  page?: number;
+  limit?: number;
+  f?: {
+    years?: string;
+    types?: string[];
+    genres?: string;
+    search?: string;
+    sorting?: UserFavoriteSorting;
+    age_ratings?: string[];
+  };
+  include?: string;
+  exclude?: string;
 }
 
 export interface AddToFavoriteRequest {
-  release_id: string;
-  status_id?: string;
+  release_id: number;
 }
 
-export interface UpdateFavoriteRequest {
-  status_id: string;
+export interface RemoveFromFavoriteRequest {
+  release_id: number;
 }
 
-// Просмотры
-export interface WatchHistory {
-  id: string;
-  release_id: string;
-  episode_id: string;
-  timestamp: number;
-  duration: number;
-  created_at: string;
-  updated_at: string;
+export interface UpdateTimecodeRequest {
+  time: number;
+  is_watched: boolean;
+  release_episode_id: string;
 }
 
-export interface UpdateWatchHistoryRequest {
-  episode_id: string;
-  timestamp: number;
-  duration: number;
+export interface DeleteTimecodeRequest {
+  release_episode_id: string;
 }
 
-// Реклама
-export interface VastAd {
-  id: string;
-  title: string;
-  url: string;
-  duration: number;
-  skip_offset?: number;
-}
-
-// Аниме - Каталог
-export interface Release {
-  id: string;
-  code: string;
-  title: ReleaseTitle;
-  description?: string;
-  poster?: string;
-  screenshots?: string[];
-  type?: ReleaseType;
-  genres?: Genre[];
-  season?: Season;
-  status?: ReleaseStatus;
-  rating?: Rating;
-  franchise?: Franchise;
-  episodes_total?: number;
-  episodes_released?: number;
-  team?: Team;
-  torrents?: Torrent[];
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ReleaseTitle {
-  ru: string;
-  en: string;
-  jp?: string;
-}
-
-export interface ReleaseType {
-  id: string;
-  title: string;
-  sort_order: number;
-}
-
-export interface Genre {
-  id: string;
-  title: string;
-}
-
-export interface Season {
-  id: string;
-  title: string;
-  year: number;
-  sort_order: number;
-}
-
-export interface ReleaseStatus {
-  id: string;
-  title: string;
-}
-
-export interface Rating {
-  id: string;
-  title: string;
-  description?: string;
-}
-
-export interface Franchise {
-  id: string;
-  title: string;
-  releases?: Release[];
-}
-
-export interface Team {
-  id: string;
-  title: string;
-  sort_order: number;
-  description?: string;
-}
-
-// Эпизоды
-export interface Episode {
-  id: string;
-  release_id: string;
-  number: number;
-  title?: string;
-  opening?: TimeRange;
-  ending?: TimeRange;
-  duration: number;
-  streams?: Stream[];
-  created_at: string;
-  updated_at: string;
-}
-
-export interface TimeRange {
-  start: number;
-  end: number;
-}
-
-export interface Stream {
-  quality: string;
-  url: string;
-  type: string;
-}
-
-// Расписание
-export interface ScheduleItem {
-  release: Release;
-  episode_number: number;
-  release_date: string;
-}
-
-// Торренты
-export interface Torrent {
-  id: string;
-  release_id: string;
-  quality: string;
-  url: string;
-  size: number;
-  seeders: number;
-  leechers: number;
-  completed: number;
-  created_at: string;
-  updated_at: string;
-}
-
-// Поиск
-export interface SearchResult {
-  releases: Release[];
-  franchises: Franchise[];
-  total: number;
-}
-
-export interface SearchParams extends PaginationParams, IncludeExcludeParams {
-  query: string;
-  types?: string[];
-  genres?: string[];
-  seasons?: string[];
-  statuses?: string[];
-  ratings?: string[];
-}
-
-// Каталог фильтры
-export interface CatalogFilters extends PaginationParams, IncludeExcludeParams {
-  types?: string[];
-  genres?: string[];
-  seasons?: string[];
-  statuses?: string[];
-  ratings?: string[];
-  sort?: 'created_at' | 'updated_at' | 'title' | 'rating';
-  order?: 'asc' | 'desc';
-}
-
-// Медиа
-export interface PromoVideo {
-  id: string;
-  title: string;
-  description?: string;
-  url: string;
-  thumbnail?: string;
-  duration: number;
-  created_at: string;
-}
-
-export interface VideoContent {
-  id: string;
-  title: string;
-  description?: string;
-  url: string;
-  thumbnail?: string;
-  duration: number;
-  views: number;
-  created_at: string;
-}
-
-// Статус приложения
-export interface AppStatus {
-  status: 'ok' | 'maintenance' | 'error';
-  version: string;
-  message?: string;
+export interface CatalogReleasesRequestBody {
+  page?: number;
+  limit?: number;
+  f?: {
+    genres?: number[];
+    types?: string[];
+    seasons?: string[];
+    years?: {
+      from_year?: number;
+      to_year?: number;
+    };
+    search?: string;
+    sorting?: string;
+    age_ratings?: string[];
+    publish_statuses?: string[];
+    production_statuses?: string[];
+  };
+  include?: string;
+  exclude?: string;
 }
 
 // ============================================================================
@@ -458,7 +312,7 @@ export class AniLibertyClient {
       signal: controller.signal as any,
     };
 
-    if (data && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+    if (data && (method === 'POST' || method === 'PUT' || method === 'PATCH' || method === 'DELETE')) {
       options.body = JSON.stringify(data);
     }
 
@@ -474,8 +328,7 @@ export class AniLibertyClient {
       if (!response.ok) {
         return {
           status: response.status,
-          error: (responseData as any)?.message || `HTTP Error ${response.status}`,
-          data: undefined,
+          error: responseData || { message: `HTTP Error ${response.status}` },
         };
       }
 
@@ -487,7 +340,7 @@ export class AniLibertyClient {
       clearTimeout(timeoutId);
       return {
         status: 0,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: { message: error instanceof Error ? error.message : 'Unknown error' },
       };
     }
   }
@@ -497,26 +350,26 @@ export class AniLibertyClient {
   // ============================================================================
 
   /**
-   * Запрашивает новый OTP
+   * POST /accounts/otp/get - Запрашивает новый OTP
    */
   async otpGet(request: OTPGetRequest): Promise<ApiResponse<OTPGetResponse>> {
     return this.request<OTPGetResponse>('POST', '/accounts/otp/get', request);
   }
 
   /**
-   * Присоединяет пользователя к выданному OTP
+   * POST /accounts/otp/accept - Присоединяет пользователя к выданному OTP
    */
   async otpAccept(request: OTPAcceptRequest): Promise<ApiResponse<void>> {
     return this.request<void>('POST', '/accounts/otp/accept', request);
   }
 
   /**
-   * Авторизация по OTP
+   * POST /accounts/otp/login - Авторизация по OTP
    */
   async otpLogin(request: OTPLoginRequest): Promise<ApiResponse<OTPLoginResponse>> {
     const response = await this.request<OTPLoginResponse>('POST', '/accounts/otp/login', request);
-    if (response.data?.access_token) {
-      this.setAccessToken(response.data.access_token);
+    if (response.data?.token) {
+      this.setAccessToken(response.data.token);
     }
     return response;
   }
@@ -526,37 +379,22 @@ export class AniLibertyClient {
   // ============================================================================
 
   /**
-   * Авторизация пользователя по логину и паролю
+   * POST /accounts/users/auth/login - Авторизация пользователя по логину и паролю
    */
   async login(request: LoginRequest): Promise<ApiResponse<LoginResponse>> {
     const response = await this.request<LoginResponse>('POST', '/accounts/users/auth/login', request);
-    if (response.data?.access_token) {
-      this.setAccessToken(response.data.access_token);
+    if (response.data?.token) {
+      this.setAccessToken(response.data.token);
     }
     return response;
   }
 
   /**
-   * Регистрация нового пользователя
+   * POST /accounts/users/auth/logout - Выход из системы
    */
-
-  /**
-   * Выход из системы
-   */
-  async logout(): Promise<ApiResponse<void>> {
-    const response = await this.request<void>('POST', '/accounts/users/auth/logout');
+  async logout(): Promise<ApiResponse<LogoutResponse>> {
+    const response = await this.request<LogoutResponse>('POST', '/accounts/users/auth/logout');
     this.clearAccessToken();
-    return response;
-  }
-
-  /**
-   * Обновление токена доступа
-   */
-  async refreshToken(): Promise<ApiResponse<LoginResponse>> {
-    const response = await this.request<LoginResponse>('POST', '/accounts/users/auth/refresh');
-    if (response.data?.access_token) {
-      this.setAccessToken(response.data.access_token);
-    }
     return response;
   }
 
@@ -565,55 +403,24 @@ export class AniLibertyClient {
   // ============================================================================
 
   /**
-   * Получить URL для авторизации через VK
+   * GET /accounts/users/auth/social/{provider}/login - Получить URL для авторизации через социальную сеть
    */
-  async socialAuthVkRedirect(): Promise<ApiResponse<SocialAuthRedirectResponse>> {
-    return this.request<SocialAuthRedirectResponse>('GET', '/accounts/users/auth/social/vk/redirect');
+  async socialAuthLogin(provider: UserSocialType): Promise<ApiResponse<SocialAuthLoginResponse>> {
+    return this.request<SocialAuthLoginResponse>('GET', `/accounts/users/auth/social/${provider}/login`);
   }
 
   /**
-   * Callback авторизации VK
+   * GET /accounts/users/auth/social/authenticate - Аутентифицировать пользователя через социальные сети
    */
-  async socialAuthVkCallback(params: SocialAuthCallbackParams): Promise<ApiResponse<LoginResponse>> {
-    const response = await this.request<LoginResponse>('GET', '/accounts/users/auth/social/vk/callback', undefined, params);
-    if (response.data?.access_token) {
-      this.setAccessToken(response.data.access_token);
-    }
-    return response;
-  }
-
-  /**
-   * Получить URL для авторизации через Discord
-   */
-  async socialAuthDiscordRedirect(): Promise<ApiResponse<SocialAuthRedirectResponse>> {
-    return this.request<SocialAuthRedirectResponse>('GET', '/accounts/users/auth/social/discord/redirect');
-  }
-
-  /**
-   * Callback авторизации Discord
-   */
-  async socialAuthDiscordCallback(params: SocialAuthCallbackParams): Promise<ApiResponse<LoginResponse>> {
-    const response = await this.request<LoginResponse>('GET', '/accounts/users/auth/social/discord/callback', undefined, params);
-    if (response.data?.access_token) {
-      this.setAccessToken(response.data.access_token);
-    }
-    return response;
-  }
-
-  /**
-   * Получить URL для авторизации через Google
-   */
-  async socialAuthGoogleRedirect(): Promise<ApiResponse<SocialAuthRedirectResponse>> {
-    return this.request<SocialAuthRedirectResponse>('GET', '/accounts/users/auth/social/google/redirect');
-  }
-
-  /**
-   * Callback авторизации Google
-   */
-  async socialAuthGoogleCallback(params: SocialAuthCallbackParams): Promise<ApiResponse<LoginResponse>> {
-    const response = await this.request<LoginResponse>('GET', '/accounts/users/auth/social/google/callback', undefined, params);
-    if (response.data?.access_token) {
-      this.setAccessToken(response.data.access_token);
+  async socialAuthAuthenticate(state: string): Promise<ApiResponse<SocialAuthAuthenticateResponse>> {
+    const response = await this.request<SocialAuthAuthenticateResponse>(
+      'GET',
+      '/accounts/users/auth/social/authenticate',
+      undefined,
+      { state }
+    );
+    if (response.data?.token) {
+      this.setAccessToken(response.data.token);
     }
     return response;
   }
@@ -623,17 +430,17 @@ export class AniLibertyClient {
   // ============================================================================
 
   /**
-   * Запрос на сброс пароля
+   * POST /accounts/users/auth/password/forget - Запрос на сброс пароля
    */
-  async passwordResetRequest(request: PasswordResetRequest): Promise<ApiResponse<void>> {
-    return this.request<void>('POST', '/accounts/users/auth/password/reset', request);
+  async passwordForget(request: PasswordForgetRequest): Promise<ApiResponse<void>> {
+    return this.request<void>('POST', '/accounts/users/auth/password/forget', request);
   }
 
   /**
-   * Подтверждение сброса пароля
+   * POST /accounts/users/auth/password/reset - Подтверждение сброса пароля
    */
-  async passwordResetConfirm(request: PasswordResetConfirmRequest): Promise<ApiResponse<void>> {
-    return this.request<void>('POST', '/accounts/users/auth/password/reset/confirm', request);
+  async passwordReset(request: PasswordResetRequest): Promise<ApiResponse<void>> {
+    return this.request<void>('POST', '/accounts/users/auth/password/reset', request);
   }
 
   // ============================================================================
@@ -641,31 +448,54 @@ export class AniLibertyClient {
   // ============================================================================
 
   /**
-   * Получить профиль текущего пользователя
+   * GET /accounts/users/me/profile - Получить профиль текущего пользователя
    */
-  async getMyProfile(): Promise<ApiResponse<UserProfile>> {
-    return this.request<UserProfile>('GET', '/accounts/users/me/profile');
+  async getMyProfile(params?: IncludeExcludeParams): Promise<ApiResponse<User>> {
+    return this.request<User>('GET', '/accounts/users/me/profile', undefined, params);
+  }
+
+  // ============================================================================
+  // КОЛЛЕКЦИИ - СПРАВОЧНИКИ
+  // ============================================================================
+
+  /**
+   * GET /accounts/users/me/collections/references/age-ratings - Список возрастных рейтингов в коллекциях
+   */
+  async getCollectionAgeRatings(): Promise<ApiResponse<CollectionsReferencesAgeRatings>> {
+    return this.request<CollectionsReferencesAgeRatings>(
+      'GET',
+      '/accounts/users/me/collections/references/age-ratings'
+    );
   }
 
   /**
-   * Обновить профиль
+   * GET /accounts/users/me/collections/references/genres - Список жанров в коллекциях
    */
-  async updateMyProfile(request: UpdateProfileRequest): Promise<ApiResponse<UserProfile>> {
-    return this.request<UserProfile>('PUT', '/accounts/users/me/profile', request);
+  async getCollectionGenres(): Promise<ApiResponse<CollectionsReferencesGenres>> {
+    return this.request<CollectionsReferencesGenres>(
+      'GET',
+      '/accounts/users/me/collections/references/genres'
+    );
   }
 
   /**
-   * Изменить пароль
+   * GET /accounts/users/me/collections/references/types - Список типов в коллекциях
    */
-  async updateMyPassword(request: UpdatePasswordRequest): Promise<ApiResponse<void>> {
-    return this.request<void>('PUT', '/accounts/users/me/profile/password', request);
+  async getCollectionTypes(): Promise<ApiResponse<CollectionsReferencesTypes>> {
+    return this.request<CollectionsReferencesTypes>(
+      'GET',
+      '/accounts/users/me/collections/references/types'
+    );
   }
 
   /**
-   * Удалить аккаунт
+   * GET /accounts/users/me/collections/references/years - Список годов в коллекциях
    */
-  async deleteMyAccount(): Promise<ApiResponse<void>> {
-    return this.request<void>('DELETE', '/accounts/users/me/profile');
+  async getCollectionYears(): Promise<ApiResponse<CollectionsReferencesYears>> {
+    return this.request<CollectionsReferencesYears>(
+      'GET',
+      '/accounts/users/me/collections/references/years'
+    );
   }
 
   // ============================================================================
@@ -673,59 +503,118 @@ export class AniLibertyClient {
   // ============================================================================
 
   /**
-   * Получить список статусов коллекций
+   * GET /accounts/users/me/collections/ids - Список идентификаторов релизов в коллекциях
    */
-  async getCollectionStatuses(): Promise<ApiResponse<FavoriteStatus[]>> {
-    return this.request<FavoriteStatus[]>('GET', '/accounts/users/me/collections/dictionaries/statuses');
+  async getCollectionIds(): Promise<ApiResponse<CollectionIdsResponse>> {
+    return this.request<CollectionIdsResponse>('GET', '/accounts/users/me/collections/ids');
   }
 
   /**
-   * Получить все коллекции пользователя
+   * GET /accounts/users/me/collections/releases - Список релизов из коллекции [GET]
    */
-  async getMyCollections(params?: PaginationParams): Promise<ApiResponse<Collection[]>> {
-    return this.request<Collection[]>('GET', '/accounts/users/me/collections', undefined, params);
+  async getCollectionReleases(params: {
+    page?: number;
+    limit?: number;
+    type_of_collection: UserCollectionType;
+    'f[genres]'?: string;
+    'f[types]'?: string[];
+    'f[years]'?: string;
+    'f[search]'?: string;
+    'f[age_ratings]'?: string[];
+    include?: string;
+    exclude?: string;
+  }): Promise<ApiResponse<CollectionReleasesResponse>> {
+    return this.request<CollectionReleasesResponse>(
+      'GET',
+      '/accounts/users/me/collections/releases',
+      undefined,
+      params
+    );
   }
 
   /**
-   * Создать коллекцию
+   * POST /accounts/users/me/collections/releases - Список релизов из коллекции [POST]
    */
-  async createCollection(request: CreateCollectionRequest): Promise<ApiResponse<Collection>> {
-    return this.request<Collection>('POST', '/accounts/users/me/collections', request);
+  async getCollectionReleasesPost(
+    body: CollectionReleasesRequestBody
+  ): Promise<ApiResponse<CollectionReleasesResponse>> {
+    return this.request<CollectionReleasesResponse>(
+      'POST',
+      '/accounts/users/me/collections/releases',
+      body
+    );
   }
 
   /**
-   * Получить коллекцию по ID
+   * POST /accounts/users/me/collections - Добавить релизы в коллекции
    */
-  async getCollection(collectionId: string, params?: IncludeExcludeParams): Promise<ApiResponse<Collection>> {
-    return this.request<Collection>('GET', `/accounts/users/me/collections/${collectionId}`, undefined, params);
+  async addToCollection(
+    requests: AddToCollectionRequest[]
+  ): Promise<ApiResponse<CollectionReleaseItem[]>> {
+    return this.request<CollectionReleaseItem[]>('POST', '/accounts/users/me/collections', requests);
   }
 
   /**
-   * Обновить коллекцию
+   * DELETE /accounts/users/me/collections - Удалить релизы из коллекций
    */
-  async updateCollection(collectionId: string, request: UpdateCollectionRequest): Promise<ApiResponse<Collection>> {
-    return this.request<Collection>('PUT', `/accounts/users/me/collections/${collectionId}`, request);
+  async removeFromCollection(
+    requests: RemoveFromCollectionRequest[]
+  ): Promise<ApiResponse<CollectionReleaseItem[]>> {
+    return this.request<CollectionReleaseItem[]>('DELETE', '/accounts/users/me/collections', requests);
+  }
+
+  // ============================================================================
+  // ИЗБРАННОЕ - СПРАВОЧНИКИ
+  // ============================================================================
+
+  /**
+   * GET /accounts/users/me/favorites/references/age-ratings - Список возрастных рейтингов в избранном
+   */
+  async getFavoriteAgeRatings(): Promise<ApiResponse<FavoritesReferencesAgeRatings>> {
+    return this.request<FavoritesReferencesAgeRatings>(
+      'GET',
+      '/accounts/users/me/favorites/references/age-ratings'
+    );
   }
 
   /**
-   * Удалить коллекцию
+   * GET /accounts/users/me/favorites/references/genres - Список жанров в избранном
    */
-  async deleteCollection(collectionId: string): Promise<ApiResponse<void>> {
-    return this.request<void>('DELETE', `/accounts/users/me/collections/${collectionId}`);
+  async getFavoriteGenres(): Promise<ApiResponse<FavoritesReferencesGenres>> {
+    return this.request<FavoritesReferencesGenres>(
+      'GET',
+      '/accounts/users/me/favorites/references/genres'
+    );
   }
 
   /**
-   * Добавить релиз в коллекцию
+   * GET /accounts/users/me/favorites/references/sorting - Список опций сортировки в избранном
    */
-  async addReleaseToCollection(collectionId: string, request: AddReleaseToCollectionRequest): Promise<ApiResponse<void>> {
-    return this.request<void>('POST', `/accounts/users/me/collections/${collectionId}/releases`, request);
+  async getFavoriteSorting(): Promise<ApiResponse<FavoritesReferencesSorting>> {
+    return this.request<FavoritesReferencesSorting>(
+      'GET',
+      '/accounts/users/me/favorites/references/sorting'
+    );
   }
 
   /**
-   * Удалить релиз из коллекции
+   * GET /accounts/users/me/favorites/references/types - Список типов релизов в избранном
    */
-  async removeReleaseFromCollection(collectionId: string, releaseId: string): Promise<ApiResponse<void>> {
-    return this.request<void>('DELETE', `/accounts/users/me/collections/${collectionId}/releases/${releaseId}`);
+  async getFavoriteTypes(): Promise<ApiResponse<FavoritesReferencesTypes>> {
+    return this.request<FavoritesReferencesTypes>(
+      'GET',
+      '/accounts/users/me/favorites/references/types'
+    );
+  }
+
+  /**
+   * GET /accounts/users/me/favorites/references/years - Список годов в избранном
+   */
+  async getFavoriteYears(): Promise<ApiResponse<FavoritesReferencesYears>> {
+    return this.request<FavoritesReferencesYears>(
+      'GET',
+      '/accounts/users/me/favorites/references/years'
+    );
   }
 
   // ============================================================================
@@ -733,38 +622,62 @@ export class AniLibertyClient {
   // ============================================================================
 
   /**
-   * Получить список статусов избранного
+   * GET /accounts/users/me/favorites/ids - Список идентификаторов релизов в избранном
    */
-  async getFavoriteStatuses(): Promise<ApiResponse<FavoriteStatus[]>> {
-    return this.request<FavoriteStatus[]>('GET', '/accounts/users/me/favorites/dictionaries/statuses');
+  async getFavoriteIds(): Promise<ApiResponse<FavoriteIdsResponse>> {
+    return this.request<FavoriteIdsResponse>('GET', '/accounts/users/me/favorites/ids');
   }
 
   /**
-   * Получить все избранные релизы
+   * GET /accounts/users/me/favorites/releases - Список релизов в избранном [GET]
    */
-  async getMyFavorites(params?: PaginationParams & IncludeExcludeParams): Promise<ApiResponse<Favorite[]>> {
-    return this.request<Favorite[]>('GET', '/accounts/users/me/favorites', undefined, params);
+  async getFavoriteReleases(params: {
+    page?: number;
+    limit?: number;
+    'f[years]'?: string;
+    'f[types]'?: string[];
+    'f[genres]'?: string;
+    'f[search]'?: string;
+    'f[sorting]'?: UserFavoriteSorting;
+    'f[age_ratings]'?: string[];
+    include?: string;
+    exclude?: string;
+  }): Promise<ApiResponse<FavoriteReleasesResponse>> {
+    return this.request<FavoriteReleasesResponse>(
+      'GET',
+      '/accounts/users/me/favorites/releases',
+      undefined,
+      params
+    );
   }
 
   /**
-   * Добавить релиз в избранное
+   * POST /accounts/users/me/favorites/releases - Список релизов в избранном [POST]
    */
-  async addToFavorites(request: AddToFavoriteRequest): Promise<ApiResponse<Favorite>> {
-    return this.request<Favorite>('POST', '/accounts/users/me/favorites', request);
+  async getFavoriteReleasesPost(
+    body: FavoriteReleasesRequestBody
+  ): Promise<ApiResponse<FavoriteReleasesResponse>> {
+    return this.request<FavoriteReleasesResponse>(
+      'POST',
+      '/accounts/users/me/favorites/releases',
+      body
+    );
   }
 
   /**
-   * Обновить статус избранного релиза
+   * POST /accounts/users/me/favorites - Добавить релизы в избранное
    */
-  async updateFavorite(releaseId: string, request: UpdateFavoriteRequest): Promise<ApiResponse<Favorite>> {
-    return this.request<Favorite>('PUT', `/accounts/users/me/favorites/${releaseId}`, request);
+  async addToFavorites(requests: AddToFavoriteRequest[]): Promise<ApiResponse<FavoriteIdsResponse>> {
+    return this.request<FavoriteIdsResponse>('POST', '/accounts/users/me/favorites', requests);
   }
 
   /**
-   * Удалить релиз из избранного
+   * DELETE /accounts/users/me/favorites - Удалить релизы из избранного
    */
-  async removeFromFavorites(releaseId: string): Promise<ApiResponse<void>> {
-    return this.request<void>('DELETE', `/accounts/users/me/favorites/${releaseId}`);
+  async removeFromFavorites(
+    requests: RemoveFromFavoriteRequest[]
+  ): Promise<ApiResponse<FavoriteIdsResponse>> {
+    return this.request<FavoriteIdsResponse>('DELETE', '/accounts/users/me/favorites', requests);
   }
 
   // ============================================================================
@@ -772,31 +685,47 @@ export class AniLibertyClient {
   // ============================================================================
 
   /**
-   * Получить историю просмотров
+   * GET /accounts/users/me/views/history - История просмотренных эпизодов
    */
-  async getWatchHistory(params?: PaginationParams & IncludeExcludeParams): Promise<ApiResponse<WatchHistory[]>> {
-    return this.request<WatchHistory[]>('GET', '/accounts/users/me/watch-history', undefined, params);
+  async getViewHistory(
+    params?: PaginationParams & IncludeExcludeParams
+  ): Promise<ApiResponse<ViewHistoryResponse>> {
+    return this.request<ViewHistoryResponse>(
+      'GET',
+      '/accounts/users/me/views/history',
+      undefined,
+      params
+    );
   }
 
   /**
-   * Обновить позицию просмотра эпизода
+   * GET /accounts/users/me/views/timecodes - Таймкоды просмотренных эпизодов
    */
-  async updateWatchHistory(releaseId: string, request: UpdateWatchHistoryRequest): Promise<ApiResponse<WatchHistory>> {
-    return this.request<WatchHistory>('PUT', `/accounts/users/me/watch-history/${releaseId}`, request);
+  async getViewTimecodes(params?: { since?: string }): Promise<ApiResponse<ViewTimecodesResponse>> {
+    return this.request<ViewTimecodesResponse>(
+      'GET',
+      '/accounts/users/me/views/timecodes',
+      undefined,
+      params
+    );
   }
 
   /**
-   * Удалить запись из истории просмотров
+   * POST /accounts/users/me/views/timecodes - Обновление таймкодов прогресса
    */
-  async deleteWatchHistory(releaseId: string): Promise<ApiResponse<void>> {
-    return this.request<void>('DELETE', `/accounts/users/me/watch-history/${releaseId}`);
+  async updateViewTimecodes(
+    requests: UpdateTimecodeRequest[]
+  ): Promise<ApiResponse<void>> {
+    return this.request<void>('POST', '/accounts/users/me/views/timecodes', requests);
   }
 
   /**
-   * Очистить всю историю просмотров
+   * DELETE /accounts/users/me/views/timecodes - Удаление таймкодов просмотра
    */
-  async clearWatchHistory(): Promise<ApiResponse<void>> {
-    return this.request<void>('DELETE', '/accounts/users/me/watch-history');
+  async deleteViewTimecodes(
+    requests: DeleteTimecodeRequest[]
+  ): Promise<ApiResponse<void>> {
+    return this.request<void>('DELETE', '/accounts/users/me/views/timecodes', requests);
   }
 
   // ============================================================================
@@ -804,10 +733,86 @@ export class AniLibertyClient {
   // ============================================================================
 
   /**
-   * Получить VAST рекламу
+   * GET /media/vasts - Список возможных VAST реклам
    */
-  async getVastAds(params?: { placement?: string }): Promise<ApiResponse<VastAd[]>> {
-    return this.request<VastAd[]>('GET', '/ads/vasts', undefined, params);
+  async getVastAds(): Promise<ApiResponse<AdVast[]>> {
+    return this.request<AdVast[]>('GET', '/media/vasts');
+  }
+
+  /**
+   * GET /media/manifest.xml - VAST XML с цепочкой реклам
+   */
+  async getVastManifest(): Promise<ApiResponse<string>> {
+    return this.request<string>('GET', '/media/manifest.xml');
+  }
+
+  // ============================================================================
+  // КАТАЛОГ АНИМЕ - СПРАВОЧНИКИ
+  // ============================================================================
+
+  /**
+   * GET /anime/catalog/references/age-ratings - Список возрастных рейтингов в каталоге
+   */
+  async getCatalogAgeRatings(): Promise<ApiResponse<CatalogReferenceAgeRating[]>> {
+    return this.request<CatalogReferenceAgeRating[]>(
+      'GET',
+      '/anime/catalog/references/age-ratings'
+    );
+  }
+
+  /**
+   * GET /anime/catalog/references/genres - Список жанров в каталоге
+   */
+  async getCatalogGenres(): Promise<ApiResponse<CatalogReferenceGenre[]>> {
+    return this.request<CatalogReferenceGenre[]>('GET', '/anime/catalog/references/genres');
+  }
+
+  /**
+   * GET /anime/catalog/references/production-statuses - Список статусов озвучки релиза
+   */
+  async getCatalogProductionStatuses(): Promise<ApiResponse<CatalogReferenceProductionStatus[]>> {
+    return this.request<CatalogReferenceProductionStatus[]>(
+      'GET',
+      '/anime/catalog/references/production-statuses'
+    );
+  }
+
+  /**
+   * GET /anime/catalog/references/publish-statuses - Список статусов выхода релиза
+   */
+  async getCatalogPublishStatuses(): Promise<ApiResponse<CatalogReferencePublishStatus[]>> {
+    return this.request<CatalogReferencePublishStatus[]>(
+      'GET',
+      '/anime/catalog/references/publish-statuses'
+    );
+  }
+
+  /**
+   * GET /anime/catalog/references/seasons - Список сезонов релиза
+   */
+  async getCatalogSeasons(): Promise<ApiResponse<CatalogReferenceSeason[]>> {
+    return this.request<CatalogReferenceSeason[]>('GET', '/anime/catalog/references/seasons');
+  }
+
+  /**
+   * GET /anime/catalog/references/sorting - Список типов сортировок
+   */
+  async getCatalogSorting(): Promise<ApiResponse<CatalogReferenceSorting[]>> {
+    return this.request<CatalogReferenceSorting[]>('GET', '/anime/catalog/references/sorting');
+  }
+
+  /**
+   * GET /anime/catalog/references/types - Список типов релизов
+   */
+  async getCatalogTypes(): Promise<ApiResponse<CatalogReferenceType[]>> {
+    return this.request<CatalogReferenceType[]>('GET', '/anime/catalog/references/types');
+  }
+
+  /**
+   * GET /anime/catalog/references/years - Список годов в каталоге
+   */
+  async getCatalogYears(): Promise<ApiResponse<CatalogReferenceYears>> {
+    return this.request<CatalogReferenceYears>('GET', '/anime/catalog/references/years');
   }
 
   // ============================================================================
@@ -815,77 +820,39 @@ export class AniLibertyClient {
   // ============================================================================
 
   /**
-   * Получить список релизов с фильтрацией
+   * GET /anime/catalog/releases - Список релизов в каталоге [GET]
    */
-  async getCatalog(filters?: CatalogFilters): Promise<ApiResponse<Release[]>> {
-    return this.request<Release[]>('GET', '/anime/catalog/releases', undefined, filters);
+  async getCatalogReleases(params?: {
+    page?: number;
+    limit?: number;
+    'f[genres]'?: string;
+    'f[types]'?: string[];
+    'f[seasons]'?: string[];
+    'f[years][from_year]'?: number;
+    'f[years][to_year]'?: number;
+    'f[search]'?: string;
+    'f[sorting]'?: string;
+    'f[age_ratings]'?: string[];
+    'f[publish_statuses]'?: string[];
+    'f[production_statuses]'?: string[];
+    include?: string;
+    exclude?: string;
+  }): Promise<ApiResponse<CatalogReleasesResponse>> {
+    return this.request<CatalogReleasesResponse>(
+      'GET',
+      '/anime/catalog/releases',
+      undefined,
+      params
+    );
   }
 
   /**
-   * Получить релиз по ID
+   * POST /anime/catalog/releases - Список релизов в каталоге [POST]
    */
-  async getRelease(releaseId: string, params?: IncludeExcludeParams): Promise<ApiResponse<Release>> {
-    return this.request<Release>('GET', `/anime/catalog/releases/${releaseId}`, undefined, params);
-  }
-
-  /**
-   * Получить релиз по коду
-   */
-  async getReleaseByCode(code: string, params?: IncludeExcludeParams): Promise<ApiResponse<Release>> {
-    return this.request<Release>('GET', `/anime/catalog/releases/code/${code}`, undefined, params);
-  }
-
-  /**
-   * Получить случайный релиз
-   */
-  async getRandomRelease(params?: IncludeExcludeParams & { filters?: Partial<CatalogFilters> }): Promise<ApiResponse<Release>> {
-    return this.request<Release>('GET', '/anime/catalog/releases/random', undefined, params);
-  }
-
-  /**
-   * Получить последние обновления релизов
-   */
-  async getUpdates(params?: PaginationParams & IncludeExcludeParams): Promise<ApiResponse<Release[]>> {
-    return this.request<Release[]>('GET', '/anime/catalog/releases/updates', undefined, params);
-  }
-
-  // ============================================================================
-  // СПРАВОЧНИКИ КАТАЛОГА
-  // ============================================================================
-
-  /**
-   * Получить список типов релизов
-   */
-  async getReleaseTypes(): Promise<ApiResponse<ReleaseType[]>> {
-    return this.request<ReleaseType[]>('GET', '/anime/catalog/dictionaries/types');
-  }
-
-  /**
-   * Получить список жанров
-   */
-  async getGenres(): Promise<ApiResponse<Genre[]>> {
-    return this.request<Genre[]>('GET', '/anime/genres');
-  }
-
-  /**
-   * Получить список сезонов
-   */
-  async getSeasons(): Promise<ApiResponse<Season[]>> {
-    return this.request<Season[]>('GET', '/anime/catalog/dictionaries/seasons');
-  }
-
-  /**
-   * Получить список статусов релизов
-   */
-  async getReleaseStatuses(): Promise<ApiResponse<ReleaseStatus[]>> {
-    return this.request<ReleaseStatus[]>('GET', '/anime/catalog/dictionaries/statuses');
-  }
-
-  /**
-   * Получить список возрастных рейтингов
-   */
-  async getRatings(): Promise<ApiResponse<Rating[]>> {
-    return this.request<Rating[]>('GET', '/anime/catalog/dictionaries/ratings');
+  async getCatalogReleasesPost(
+    body: CatalogReleasesRequestBody
+  ): Promise<ApiResponse<CatalogReleasesResponse>> {
+    return this.request<CatalogReleasesResponse>('POST', '/anime/catalog/releases', body);
   }
 
   // ============================================================================
@@ -893,35 +860,223 @@ export class AniLibertyClient {
   // ============================================================================
 
   /**
-   * Получить список франшиз
+   * GET /anime/franchises - Получить список франшиз
    */
-  async getFranchises(params?: PaginationParams): Promise<ApiResponse<Franchise[]>> {
-    return this.request<Franchise[]>('GET', '/anime/franchises', undefined, params);
+  async getFranchises(params?: IncludeExcludeParams): Promise<ApiResponse<FranchisesResponse>> {
+    return this.request<FranchisesResponse>('GET', '/anime/franchises', undefined, params);
   }
 
   /**
-   * Получить франшизу по ID
+   * GET /anime/franchises/{franchiseId} - Получить франшизу
    */
-  async getFranchise(franchiseId: string, params?: IncludeExcludeParams): Promise<ApiResponse<Franchise>> {
-    return this.request<Franchise>('GET', `/anime/franchises/${franchiseId}`, undefined, params);
+  async getFranchise(
+    franchiseId: string,
+    params?: IncludeExcludeParams
+  ): Promise<ApiResponse<FranchiseResponse>> {
+    return this.request<FranchiseResponse>(
+      'GET',
+      `/anime/franchises/${franchiseId}`,
+      undefined,
+      params
+    );
+  }
+
+  /**
+   * GET /anime/franchises/random - Получить список случайных франшиз
+   */
+  async getRandomFranchises(
+    params?: { limit?: number } & IncludeExcludeParams
+  ): Promise<ApiResponse<RandomFranchisesResponse>> {
+    return this.request<RandomFranchisesResponse>('GET', '/anime/franchises/random', undefined, params);
+  }
+
+  /**
+   * GET /anime/franchises/release/{releaseId} - Получить список франшиз для релиза
+   */
+  async getFranchisesByRelease(
+    releaseId: string,
+    params?: IncludeExcludeParams
+  ): Promise<ApiResponse<FranchisesByReleaseResponse>> {
+    return this.request<FranchisesByReleaseResponse>(
+      'GET',
+      `/anime/franchises/release/${releaseId}`,
+      undefined,
+      params
+    );
   }
 
   // ============================================================================
-  // РЕЛИЗЫ И ЭПИЗОДЫ
+  // ЖАНРЫ
   // ============================================================================
 
   /**
-   * Получить эпизоды релиза
+   * GET /anime/genres - Список всех жанров
    */
-  async getReleaseEpisodes(releaseId: string, params?: IncludeExcludeParams): Promise<ApiResponse<Episode[]>> {
-    return this.request<Episode[]>('GET', `/anime/releases/${releaseId}/episodes`, undefined, params);
+  async getGenres(params?: IncludeExcludeParams): Promise<ApiResponse<GenresResponse>> {
+    return this.request<GenresResponse>('GET', '/anime/genres', undefined, params);
   }
 
   /**
-   * Получить эпизод по ID
+   * GET /anime/genres/{genreId} - Данные по жанру
    */
-  async getEpisode(releaseId: string, episodeId: string, params?: IncludeExcludeParams): Promise<ApiResponse<Episode>> {
-    return this.request<Episode>('GET', `/anime/releases/${releaseId}/episodes/${episodeId}`, undefined, params);
+  async getGenre(
+    genreId: number,
+    params?: IncludeExcludeParams
+  ): Promise<ApiResponse<GenreResponse>> {
+    return this.request<GenreResponse>('GET', `/anime/genres/${genreId}`, undefined, params);
+  }
+
+  /**
+   * GET /anime/genres/random - Список случайных жанров
+   */
+  async getRandomGenres(
+    params?: { limit?: number } & IncludeExcludeParams
+  ): Promise<ApiResponse<Genre[]>> {
+    return this.request<Genre[]>('GET', '/anime/genres/random', undefined, params);
+  }
+
+  /**
+   * GET /anime/genres/{genreId}/releases - Список релизов жанра
+   */
+  async getGenreReleases(
+    genreId: number,
+    params?: PaginationParams & IncludeExcludeParams
+  ): Promise<ApiResponse<GenreReleasesResponse>> {
+    return this.request<GenreReleasesResponse>(
+      'GET',
+      `/anime/genres/${genreId}/releases`,
+      undefined,
+      params
+    );
+  }
+
+  // ============================================================================
+  // РЕЛИЗЫ
+  // ============================================================================
+
+  /**
+   * GET /anime/releases/latest - Последние релизы
+   */
+  async getLatestReleases(
+    params?: { limit?: number } & IncludeExcludeParams
+  ): Promise<ApiResponse<LatestReleasesResponse>> {
+    return this.request<LatestReleasesResponse>('GET', '/anime/releases/latest', undefined, params);
+  }
+
+  /**
+   * GET /anime/releases/random - Данные по случайным релизам
+   */
+  async getRandomReleases(
+    params?: { limit?: number } & IncludeExcludeParams
+  ): Promise<ApiResponse<RandomReleasesResponse>> {
+    return this.request<RandomReleasesResponse>('GET', '/anime/releases/random', undefined, params);
+  }
+
+  /**
+   * GET /anime/releases/recommended - Данные по рекомендованным релизам
+   */
+  async getRecommendedReleases(
+    params?: { limit?: number; release_id?: number } & IncludeExcludeParams
+  ): Promise<ApiResponse<RecommendedReleasesResponse>> {
+    return this.request<RecommendedReleasesResponse>(
+      'GET',
+      '/anime/releases/recommended',
+      undefined,
+      params
+    );
+  }
+
+  /**
+   * GET /anime/releases/list - Данные по списку релизов
+   */
+  async getReleasesList(
+    params: {
+      ids?: number[];
+      aliases?: string[];
+      page?: number;
+      limit?: number;
+    } & IncludeExcludeParams
+  ): Promise<ApiResponse<CatalogReleasesResponse>> {
+    return this.request<CatalogReleasesResponse>(
+      'GET',
+      '/anime/releases/list',
+      undefined,
+      params
+    );
+  }
+
+  /**
+   * GET /anime/releases/{idOrAlias} - Данные по релизу
+   */
+  async getRelease(
+    idOrAlias: string | number,
+    params?: IncludeExcludeParams
+  ): Promise<ApiResponse<ReleaseFull>> {
+    return this.request<ReleaseFull>('GET', `/anime/releases/${idOrAlias}`, undefined, params);
+  }
+
+  /**
+   * GET /anime/releases/{idOrAlias}/members - Список участников релиза
+   */
+  async getReleaseMembers(
+    idOrAlias: string | number,
+    params?: IncludeExcludeParams
+  ): Promise<ApiResponse<ReleaseMember[]>> {
+    return this.request<ReleaseMember[]>(
+      'GET',
+      `/anime/releases/${idOrAlias}/members`,
+      undefined,
+      params
+    );
+  }
+
+  /**
+   * GET /anime/releases/{idOrAlias}/episodes/timecodes - Данные по таймкодам эпизодов релиза
+   */
+  async getReleaseEpisodesTimecodes(
+    idOrAlias: string | number,
+    params?: IncludeExcludeParams
+  ): Promise<ApiResponse<UserView[]>> {
+    return this.request<UserView[]>(
+      'GET',
+      `/anime/releases/${idOrAlias}/episodes/timecodes`,
+      undefined,
+      params
+    );
+  }
+
+  // ============================================================================
+  // ЭПИЗОДЫ
+  // ============================================================================
+
+  /**
+   * GET /anime/releases/episodes/{releaseEpisodeId} - Данные по эпизоду
+   */
+  async getEpisode(
+    releaseEpisodeId: string,
+    params?: IncludeExcludeParams
+  ): Promise<ApiResponse<EpisodeWithRelease>> {
+    return this.request<EpisodeWithRelease>(
+      'GET',
+      `/anime/releases/episodes/${releaseEpisodeId}`,
+      undefined,
+      params
+    );
+  }
+
+  /**
+   * GET /anime/releases/episodes/{releaseEpisodeId}/timecode - Данные по просмотру эпизода
+   */
+  async getEpisodeTimecode(
+    releaseEpisodeId: string,
+    params?: IncludeExcludeParams
+  ): Promise<ApiResponse<UserView>> {
+    return this.request<UserView>(
+      'GET',
+      `/anime/releases/episodes/${releaseEpisodeId}/timecode`,
+      undefined,
+      params
+    );
   }
 
   // ============================================================================
@@ -929,24 +1084,17 @@ export class AniLibertyClient {
   // ============================================================================
 
   /**
-   * Получить расписание выхода эпизодов
+   * GET /anime/schedule/now - Расписание релизов на текущую дату
    */
-  async getSchedule(params?: { from?: string; to?: string } & IncludeExcludeParams): Promise<ApiResponse<ScheduleItem[]>> {
-    return this.request<ScheduleItem[]>('GET', '/anime/releases/schedule', undefined, params);
+  async getScheduleNow(params?: IncludeExcludeParams): Promise<ApiResponse<ScheduleNowResponse>> {
+    return this.request<ScheduleNowResponse>('GET', '/anime/schedule/now', undefined, params);
   }
 
   /**
-   * Получить расписание на сегодня
+   * GET /anime/schedule/week - Расписание релизов на текущую неделю
    */
-  async getTodaySchedule(params?: IncludeExcludeParams): Promise<ApiResponse<ScheduleItem[]>> {
-    return this.request<ScheduleItem[]>('GET', '/anime/releases/schedule/today', undefined, params);
-  }
-
-  /**
-   * Получить расписание на неделю
-   */
-  async getWeekSchedule(params?: IncludeExcludeParams): Promise<ApiResponse<Record<string, ScheduleItem[]>>> {
-    return this.request<Record<string, ScheduleItem[]>>('GET', '/anime/releases/schedule/week', undefined, params);
+  async getScheduleWeek(params?: IncludeExcludeParams): Promise<ApiResponse<ScheduleWeekResponse>> {
+    return this.request<ScheduleWeekResponse>('GET', '/anime/schedule/week', undefined, params);
   }
 
   // ============================================================================
@@ -954,24 +1102,37 @@ export class AniLibertyClient {
   // ============================================================================
 
   /**
-   * Получить торренты релиза
+   * GET /anime/torrents - Данные по торрентам
    */
-  async getReleaseTorrents(releaseId: string): Promise<ApiResponse<Torrent[]>> {
-    return this.request<Torrent[]>('GET', `/anime/torrents/release/${releaseId}`);
+  async getTorrents(
+    params?: PaginationParams & IncludeExcludeParams
+  ): Promise<ApiResponse<TorrentsResponse>> {
+    return this.request<TorrentsResponse>('GET', '/anime/torrents', undefined, params);
   }
 
   /**
-   * Получить торрент по ID
+   * GET /anime/torrents/{hashOrId} - Данные по торренту
    */
-  async getTorrent(torrentId: string): Promise<ApiResponse<Torrent>> {
-    return this.request<Torrent>('GET', `/anime/torrents/${torrentId}`);
+  async getTorrent(
+    hashOrId: string | number,
+    params?: IncludeExcludeParams
+  ): Promise<ApiResponse<TorrentWithRelease>> {
+    return this.request<TorrentWithRelease>(
+      'GET',
+      `/anime/torrents/${hashOrId}`,
+      undefined,
+      params
+    );
   }
 
   /**
-   * Скачать торрент файл
+   * GET /anime/torrents/{hashOrId}/file - Торрент-файл по его hash или id
    */
-  async downloadTorrent(torrentId: string): Promise<ApiResponse<Buffer>> {
-    const url = `${this.baseUrl}/anime/torrents/${torrentId}/download`;
+  async downloadTorrentFile(
+    hashOrId: string | number,
+    pk?: string
+  ): Promise<ApiResponse<Blob>> {
+    const url = `${this.baseUrl}/anime/torrents/${hashOrId}/file${pk ? `?pk=${pk}` : ''}`;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
     
@@ -986,22 +1147,59 @@ export class AniLibertyClient {
       if (!response.ok) {
         return {
           status: response.status,
-          error: `HTTP Error ${response.status}`,
+          error: { message: `HTTP Error ${response.status}` },
         };
       }
 
-      const buffer = await response.buffer();
+      const blob = await response.blob();
       return {
         status: response.status,
-        data: buffer,
+        data: blob,
       };
     } catch (error) {
       clearTimeout(timeoutId);
       return {
         status: 0,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: { message: error instanceof Error ? error.message : 'Unknown error' },
       };
     }
+  }
+
+  /**
+   * GET /anime/torrents/release/{releaseId} - Данные по торрентам для релиза
+   */
+  async getReleaseTorrents(
+    releaseId: number,
+    params?: IncludeExcludeParams
+  ): Promise<ApiResponse<TorrentWithRelease[]>> {
+    return this.request<TorrentWithRelease[]>(
+      'GET',
+      `/anime/torrents/release/${releaseId}`,
+      undefined,
+      params
+    );
+  }
+
+  /**
+   * GET /anime/torrents/rss - RSS лента последних торрентов
+   */
+  async getTorrentsRss(params?: { limit?: number; pk?: string }): Promise<ApiResponse<string>> {
+    return this.request<string>('GET', '/anime/torrents/rss', undefined, params);
+  }
+
+  /**
+   * GET /anime/torrents/rss/release/{releaseId} - RSS лента торрентов релиза
+   */
+  async getReleaseTorrentsRss(
+    releaseId: number,
+    params?: { pk?: string }
+  ): Promise<ApiResponse<string>> {
+    return this.request<string>(
+      'GET',
+      `/anime/torrents/rss/release/${releaseId}`,
+      undefined,
+      params
+    );
   }
 
   // ============================================================================
@@ -1009,17 +1207,12 @@ export class AniLibertyClient {
   // ============================================================================
 
   /**
-   * Поиск по каталогу
+   * GET /app/search/releases - Поиск релизов
    */
-  async search(params: SearchParams): Promise<ApiResponse<SearchResult>> {
-    return this.request<SearchResult>('GET', '/app/search', undefined, params);
-  }
-
-  /**
-   * Быстрый поиск (автодополнение)
-   */
-  async quickSearch(query: string, limit?: number): Promise<ApiResponse<Release[]>> {
-    return this.request<Release[]>('GET', '/app/search/quick', undefined, { query, limit });
+  async searchReleases(
+    params: { query: string } & IncludeExcludeParams
+  ): Promise<ApiResponse<SearchReleasesResponse>> {
+    return this.request<SearchReleasesResponse>('GET', '/app/search/releases', undefined, params);
   }
 
   // ============================================================================
@@ -1027,17 +1220,10 @@ export class AniLibertyClient {
   // ============================================================================
 
   /**
-   * Получить статус API
+   * GET /app/status - Статус API
    */
   async getAppStatus(): Promise<ApiResponse<AppStatus>> {
     return this.request<AppStatus>('GET', '/app/status');
-  }
-
-  /**
-   * Проверить доступность API (ping)
-   */
-  async ping(): Promise<ApiResponse<{ pong: boolean }>> {
-    return this.request<{ pong: boolean }>('GET', '/app/ping');
   }
 
   // ============================================================================
@@ -1045,31 +1231,21 @@ export class AniLibertyClient {
   // ============================================================================
 
   /**
-   * Получить промо видео
+   * GET /media/promotions - Список промо-материалов
    */
-  async getPromoVideos(params?: PaginationParams): Promise<ApiResponse<PromoVideo[]>> {
-    return this.request<PromoVideo[]>('GET', '/media/promo', undefined, params);
+  async getMediaPromotions(
+    params?: IncludeExcludeParams
+  ): Promise<ApiResponse<MediaPromotionsResponse>> {
+    return this.request<MediaPromotionsResponse>('GET', '/media/promotions', undefined, params);
   }
 
   /**
-   * Получить промо видео по ID
+   * GET /media/videos - Список видео-роликов
    */
-  async getPromoVideo(videoId: string): Promise<ApiResponse<PromoVideo>> {
-    return this.request<PromoVideo>('GET', `/media/promo/${videoId}`);
-  }
-
-  /**
-   * Получить видеоконтент
-   */
-  async getVideoContent(params?: PaginationParams): Promise<ApiResponse<VideoContent[]>> {
-    return this.request<VideoContent[]>('GET', '/media/videos', undefined, params);
-  }
-
-  /**
-   * Получить видео по ID
-   */
-  async getVideo(videoId: string): Promise<ApiResponse<VideoContent>> {
-    return this.request<VideoContent>('GET', `/media/videos/${videoId}`);
+  async getMediaVideos(
+    params?: { limit?: number } & IncludeExcludeParams
+  ): Promise<ApiResponse<MediaVideosResponse>> {
+    return this.request<MediaVideosResponse>('GET', '/media/videos', undefined, params);
   }
 
   // ============================================================================
@@ -1077,17 +1253,24 @@ export class AniLibertyClient {
   // ============================================================================
 
   /**
-   * Получить список команд
+   * GET /teams/ - Список команд АниЛибрии
    */
-  async getTeams(params?: PaginationParams): Promise<ApiResponse<Team[]>> {
-    return this.request<Team[]>('GET', '/teams', undefined, params);
+  async getTeams(params?: IncludeExcludeParams): Promise<ApiResponse<TeamsResponse>> {
+    return this.request<TeamsResponse>('GET', '/teams/', undefined, params);
   }
 
   /**
-   * Получить команду по ID
+   * GET /teams/roles - Список ролей
    */
-  async getTeam(teamId: string): Promise<ApiResponse<Team>> {
-    return this.request<Team>('GET', `/teams/${teamId}`);
+  async getTeamRoles(params?: IncludeExcludeParams): Promise<ApiResponse<TeamRolesResponse>> {
+    return this.request<TeamRolesResponse>('GET', '/teams/roles', undefined, params);
+  }
+
+  /**
+   * GET /teams/users - Список анилибрийцев
+   */
+  async getTeamUsers(params?: IncludeExcludeParams): Promise<ApiResponse<TeamUsersResponse>> {
+    return this.request<TeamUsersResponse>('GET', '/teams/users', undefined, params);
   }
 }
 
@@ -1112,7 +1295,7 @@ export function isSuccess<T>(response: ApiResponse<T>): response is ApiResponse<
 /**
  * Проверка ошибки
  */
-export function isError<T>(response: ApiResponse<T>): response is ApiResponse<T> & { error: string } {
+export function isError<T>(response: ApiResponse<T>): response is ApiResponse<T> & { error: any } {
   return response.error !== undefined;
 }
 
