@@ -1,0 +1,46 @@
+{
+  "name": "anilibertyjs",
+  "version": "1.0.4",
+  "description": "Полноценный Node.js клиент для AniLiberty API V1 с полным покрытием всех endpoints",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "prepare": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "aniliberty",
+    "anime",
+    "api",
+    "client",
+    "typescript",
+    "nodejs"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/whathepka/anilibertyjs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/whathepka/anilibertyjs/issues"
+  },
+  "homepage": "https://github.com/whathepka/anilibertyjs#readme",
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AniLiberty.js - Справочник API</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="index.html" class="back-link">← Главная</a>
+            <h1>📖 Полный справочник API</h1>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <div class="nav-links">
+                <a href="#auth">Авторизация</a>
+                <a href="#profile">Профиль</a>
+                <a href="#favorites">Избранное</a>
+                <a href="#collections">Коллекции</a>
+                <a href="#catalog">Каталог</a>
+                <a href="#search">Поиск</a>
+                <a href="#schedule">Расписание</a>
+                <a href="#torrents">Торренты</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section class="api-section" id="auth">
+            <h2>🔒 Авторизация</h2>
+            <p>Все методы авторизации и управления сессией. Токен автоматически сохраняется после успешной авторизации.</p>
+            
+            <div class="method">
+                <div class="method-header">
+                    <span class="badge badge-post">POST</span>
+                    <span class="method-name">login(request: LoginRequest)</span>
+                </div>
+                <div class="method-description">Авторизация по логину и паролю</div>
+                <pre>await client.login({ login: 'user', password: 'pass' });</pre>
+            </div>
+
+            <div class="method">
+                <div class="method-header">
+                    <span class="badge badge-post">POST</span>
+                    <span class="method-name">logout()</span>
+                </div>
+                <div class="method-description">Выход из системы</div>
+            </div>
+
+            <div class="method">
+                <div class="method-header">
+                    <span class="badge badge-post">POST</span>
+                    <span class="method-name">otpGet(request: OTPGetRequest)</span>
+                </div>
+                <div class="method-description">Запросить OTP код</div>
+            </div>
+
+            <div class="method">
+                <div class="method-header">
+                    <span class="badge badge-post">POST</span>
+                    <span class="method-name">otpLogin(request: OTPLoginRequest)</span>
+                </div>
+                <div class="method-description">Авторизация по OTP</div>
+            </div>
+        </section>
+
+        <section class="api-section" id="catalog">
+            <h2>📚 Каталог</h2>
+            
+            <div class="method">
+                <div class="method-header">
+                    <span class="badge badge-get">GET</span>
+                    <span class="method-name">getCatalog(filters?: CatalogFilters)</span>
+                </div>
+                <div class="method-description">Получить каталог с фильтрами</div>
+                <pre>await client.getCatalog({ limit: 20, genres: ['action'] });</pre>
+            </div>
+
+            <div class="method">
+                <div class="method-header">
+                    <span class="badge badge-get">GET</span>
+                    <span class="method-name">getRelease(releaseId: string)</span>
+                </div>
+                <div class="method-description">Получить релиз по ID</div>
+            </div>
+
+            <div class="method">
+                <div class="method-header">
+                    <span class="badge badge-get">GET</span>
+                    <span class="method-name">getRandomRelease()</span>
+                </div>
+                <div class="method-description">Получить случайный релиз</div>
+            </div>
+
+            <div class="method">
+                <div class="method-header">
+                    <span class="badge badge-get">GET</span>
+                    <span class="method-name">getUpdates(params?: PaginationParams)</span>
+                </div>
+                <div class="method-description">Последние обновления</div>
+            </div>
+        </section>
+
+        <section class="api-section" id="search">
+            <h2>🔍 Поиск</h2>
+            
+            <div class="method">
+                <div class="method-header">
+                    <span class="badge badge-get">GET</span>
+                    <span class="method-name">search(params: SearchParams)</span>
+                </div>
+                <div class="method-description">Полнотекстовый поиск</div>
+                <pre>await client.search({ query: 'Наруто', limit: 20 });</pre>
+            </div>
+
+            <div class="method">
+                <div class="method-header">
+                    <span class="badge badge-get">GET</span>
+                    <span class="method-name">quickSearch(query: string, limit?: number)</span>
+                </div>
+                <div class="method-description">Быстрый поиск (автодополнение)</div>
+            </div>
+        </section>
+
+        <p class="note">Полная документация всех 60+ методов доступна в исходном коде библиотеки</p>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 AniLiberty.js</p>
+        </div>
+    </footer>
+</body>
+</html>

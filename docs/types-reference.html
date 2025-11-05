@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AniLiberty.js - Справочник типов</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="index.html" class="back-link">← Главная</a>
+            <h1>📝 Справочник типов TypeScript</h1>
+            <p>Все интерфейсы и типы данных</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="api-section">
+            <h2>Основные типы</h2>
+            
+            <h3>ApiResponse&lt;T&gt;</h3>
+            <pre>interface ApiResponse&lt;T&gt; {
+  data?: T;
+  error?: string;
+  status: number;
+}</pre>
+
+            <h3>PaginationParams</h3>
+            <pre>interface PaginationParams {
+  page?: number;
+  limit?: number;
+}</pre>
+
+            <h3>IncludeExcludeParams</h3>
+            <pre>interface IncludeExcludeParams {
+  include?: string | string[];
+  exclude?: string | string[];
+}</pre>
+        </section>
+
+        <section class="api-section">
+            <h2>Релизы</h2>
+            
+            <h3>Release</h3>
+            <pre>interface Release {
+  id: string;
+  code: string;
+  title: ReleaseTitle;
+  description?: string;
+  poster?: string;
+  screenshots?: string[];
+  type?: ReleaseType;
+  genres?: Genre[];
+  season?: Season;
+  status?: ReleaseStatus;
+  rating?: Rating;
+  franchise?: Franchise;
+  episodes_total?: number;
+  episodes_released?: number;
+  team?: Team;
+  torrents?: Torrent[];
+  created_at: string;
+  updated_at: string;
+}</pre>
+
+            <h3>ReleaseTitle</h3>
+            <pre>interface ReleaseTitle {
+  ru: string;
+  en: string;
+  jp?: string;
+}</pre>
+        </section>
+
+        <section class="api-section">
+            <h2>Поиск и фильтрация</h2>
+            
+            <h3>SearchParams</h3>
+            <pre>interface SearchParams extends PaginationParams, IncludeExcludeParams {
+  query: string;
+  types?: string[];
+  genres?: string[];
+  seasons?: string[];
+  statuses?: string[];
+  ratings?: string[];
+}</pre>
+
+            <h3>CatalogFilters</h3>
+            <pre>interface CatalogFilters extends PaginationParams, IncludeExcludeParams {
+  types?: string[];
+  genres?: string[];
+  seasons?: string[];
+  statuses?: string[];
+  ratings?: string[];
+  sort?: 'created_at' | 'updated_at' | 'title' | 'rating';
+  order?: 'asc' | 'desc';
+}</pre>
+        </section>
+
+        <section class="api-section">
+            <h2>Пользователь</h2>
+            
+            <h3>User</h3>
+            <pre>interface User {
+  id: string;
+  login: string;
+  email: string;
+  avatar?: string;
+  created_at: string;
+  updated_at: string;
+}</pre>
+
+            <h3>UserProfile</h3>
+            <pre>interface UserProfile extends User {
+  description?: string;
+  settings?: UserSettings;
+}</pre>
+        </section>
+
+        <p class="note">Полный список всех 50+ интерфейсов смотрите в файле <code>dist/index.d.ts</code></p>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 AniLiberty.js</p>
+        </div>
+    </footer>
+</body>
+</html>
