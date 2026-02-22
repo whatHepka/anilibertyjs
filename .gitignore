@@ -40,3 +40,6 @@ coverage/
 tmp/
 temp/
 *.tmp
+
+# api docs raw
+api-docs.json
